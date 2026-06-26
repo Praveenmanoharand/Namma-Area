@@ -33,7 +33,7 @@ export const PhoneFrame: React.FC<PhoneFrameProps> = ({ children }) => {
         </div>
 
         {/* Status Bar */}
-        <div className="bg-slate-50 text-slate-800 text-xs px-6 py-2 pt-3 flex justify-between items-center font-medium z-40 select-none border-b border-slate-100 shrink-0">
+        <div className="hidden md:flex bg-slate-50 text-slate-800 text-xs px-6 py-2 pt-3 justify-between items-center font-medium z-40 select-none border-b border-slate-100 shrink-0">
           <div>{time}</div>
           <div className="flex items-center gap-1.5">
             <Signal size={13} className="text-slate-800" />
