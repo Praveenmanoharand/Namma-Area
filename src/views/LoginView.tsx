@@ -12,19 +12,27 @@ export const LoginView: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showConfigWarning, setShowConfigWarning] = useState(false);
+  const [showUnauthorizedDomainWarning, setShowUnauthorizedDomainWarning] = useState(false);
+  const [detectedDomain, setDetectedDomain] = useState('');
 
   const handleGoogleSignIn = async () => {
     try {
       setLoading(true);
       setError('');
       setShowConfigWarning(false);
+      setShowUnauthorizedDomainWarning(false);
       await googleSignIn();
       navigateTo('/dashboard');
     } catch (err: any) {
       console.error('GOOGLE SIGN-IN ERROR:', err);
       const code = err.code || '';
       const msg = err.message || '';
-      setError(`Error [${code || 'no-code'}]: ${msg || 'No message. Check browser console (F12).'}`);
+      if (code === 'auth/unauthorized-domain' || msg.includes('unauthorized-domain')) {
+        setShowUnauthorizedDomainWarning(true);
+        setDetectedDomain(window.location.hostname);
+      } else {
+        setError(`Error [${code || 'no-code'}]: ${msg || 'No message. Check browser console (F12).'}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -99,6 +107,29 @@ export const LoginView: React.FC = () => {
         {error && (
           <div className="bg-red-50 text-red-600 text-xs px-3.5 py-2 rounded-lg border border-red-100 font-medium">
             {error}
+          </div>
+        )}
+
+        {showUnauthorizedDomainWarning && (
+          <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-950 text-xs flex flex-col gap-2.5">
+            <div className="flex items-start gap-2">
+              <span className="text-base text-red-600">⚠️</span>
+              <div>
+                <h4 className="font-bold text-[13px] text-red-950">Unauthorized Domain on Mobile</h4>
+                <p className="text-slate-650 mt-1 leading-relaxed">
+                  Firebase has blocked Google Sign-In because this domain (<strong>{detectedDomain || window.location.hostname}</strong>) is not in its authorized list. To resolve this:
+                </p>
+              </div>
+            </div>
+            <ol className="list-decimal list-inside pl-1 text-slate-700 space-y-1.5 mt-0.5 leading-relaxed">
+              <li>Go to your <a href="https://console.firebase.google.com/" target="_blank" rel="noopener noreferrer" className="font-bold underline text-blue-600 hover:text-blue-700">Firebase Console</a>.</li>
+              <li>Navigate to <strong>Build &gt; Authentication &gt; Settings</strong> tab.</li>
+              <li>Under <strong>Authorized domains</strong>, click <strong>Add domain</strong>.</li>
+              <li>Enter <strong>{detectedDomain || window.location.hostname}</strong> and save.</li>
+            </ol>
+            <div className="pt-2 border-t border-red-200/50 text-[10px] text-slate-500 font-semibold uppercase tracking-wider">
+              Once added, refresh the page and try again!
+            </div>
           </div>
         )}
 

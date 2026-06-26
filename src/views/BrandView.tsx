@@ -48,12 +48,12 @@ export const BrandView: React.FC = () => {
   const concepts: ConceptDetails[] = [
     {
       id: 'concept1',
-      name: 'Concept 1: Pure Tamil "ந" Minimal Icon',
-      tagline: 'The Elegant Authentic Script',
-      description: 'A highly polished, purely authentic Tamil letter "ந" built with clean minimal vector geometry. Designed for ultimate legibility, scale-friendliness, and startup-level professionalism.',
+      name: 'Concept 1: Tamil "ந" + Community',
+      tagline: 'The Neighborhood Gathering',
+      description: 'A highly polished, purely authentic Tamil letter "ந" integrated with subtle circular nodes at the top, representing active civic gathering points and community interaction.',
       tamilStance: 'Absolute priority on traditional letter anatomy, ensuring immediate readability for any Tamil speaker.',
-      houseStance: 'Subtle and completely flat; keeps the letter pristine.',
-      communityStance: 'None; focuses entirely on the beautiful lines of the script itself.',
+      houseStance: 'Integrates flat vector structure as a solid ground base.',
+      communityStance: 'Clean rounded circular elements forming a supportive social crown.',
       bestUse: 'Core brand emblem, scalable favicon, and official mobile application launcher.',
       icon: Sparkles
     },
@@ -70,23 +70,23 @@ export const BrandView: React.FC = () => {
     },
     {
       id: 'concept3',
-      name: 'Concept 3: Tamil "ந" + Community Nodes',
-      tagline: 'The Citizen Unity Network',
-      description: 'A modern concept where the clean geometric lines of the Tamil letter "ந" are surrounded by subtle, floating green circular nodes representing active civic gather points and citizens.',
-      tamilStance: 'Legible and centered, serving as the main core pillar.',
-      houseStance: 'Symmetrical alignment suggesting localized physical safety.',
-      communityStance: 'Concentric dots forming a collaborative network of neighbors.',
+      name: 'Concept 3: Tamil "ந" + Neighborhood Grid',
+      tagline: 'The Connected Civic Grid',
+      description: 'A modern design representing smart city planning and infrastructure, overlaying the Tamil letter "ந" onto a tech-forward 3x3 geometric grid block network.',
+      tamilStance: 'Sleek, modern letter strokes intersecting with structural block corners.',
+      houseStance: 'Symmetrical alignment suggesting modular ward layouts.',
+      communityStance: 'Grid matrix representing interconnected community wards and citizen services.',
       bestUse: 'Social features, community hubs, citizen discussion boards, and volunteer coordination.',
-      icon: Users
+      icon: Grid
     },
     {
       id: 'concept4',
-      name: 'Concept 4: Tamil "ந" in Geometric Shape',
-      tagline: 'Modern Shield and Border',
-      description: 'Presents the traditional Tamil letter "ந" centered inside a modern, beautifully rounded square frame (squircle) with clean line details, delivering a premium, secure badge look.',
+      name: 'Concept 4: Tamil "ந" + Community Circle',
+      tagline: 'The Ring of Collaboration',
+      description: 'Presents the traditional Tamil letter "ந" centered inside a modern, beautifully pulsing community orbit path and concentric circle lines, showing citizen unity.',
       tamilStance: 'Perfect minimalist monoline geometry centered beautifully within the protective frame.',
       houseStance: 'Integrated horizontal upper anchor providing stability to the inner glyph.',
-      communityStance: 'Concentric outer borders representing a ring of safety, neighborhood watch, and localized protection.',
+      communityStance: 'Dashed outer circular orbits representing a protective ring of safety, neighborhood watch, and local community circle.',
       bestUse: 'Safety apps, security alerts, high-contrast badges, and local community watch portals.',
       icon: ShieldCheck
     },

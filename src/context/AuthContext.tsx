@@ -25,12 +25,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setFirebaseUser(fUser);
       if (fUser) {
         try {
-          const profile = await getUserProfile(fUser.uid);
+          // Load profile with a 4-second timeout to prevent hangs when offline or slow
+          const profilePromise = getUserProfile(fUser.uid);
+          const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 4000));
+          const profile = await Promise.race([profilePromise, timeoutPromise]);
+          
           if (profile) {
             setUser(profile);
             setCachedUser(profile);
           } else {
-            // Profile not found in Firestore — use cached or build minimal user
+            // Profile not found or timed out in Firestore — use cached or build minimal user
             const cached = getCurrentUser();
             const fallback: User = cached || {
               id: fUser.uid,
