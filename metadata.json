@@ -1,0 +1,6 @@
+{
+  "name": "Namma Area",
+  "description": "A mobile-first civic community platform that empowers citizens to report local issues, track resolutions, participate in community drives, and check recent neighborhood updates.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

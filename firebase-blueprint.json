@@ -1,0 +1,266 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User profile with civic-tech metrics and history.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string" },
+        "name": { "type": "string" },
+        "mobileNumber": { "type": "string" },
+        "avatar": { "type": "string" },
+        "role": { "type": "string" },
+        "area": { "type": "string" },
+        "contributorLevel": { "type": "integer" },
+        "complaintsCount": { "type": "integer" },
+        "resolvedCount": { "type": "integer" },
+        "contributionsCount": { "type": "integer" },
+        "recentActivity": { "type": "array" }
+      },
+      "required": ["id", "email", "name"]
+    },
+    "Complaint": {
+      "title": "Civic Complaint",
+      "description": "Civic complaint reported by residents.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "status": { "type": "string" },
+        "location": { "type": "string" },
+        "upvotes": { "type": "integer" },
+        "upvotedBy": { "type": "array" },
+        "creatorId": { "type": "string" },
+        "creatorName": { "type": "string" },
+        "creatorAvatar": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "image": { "type": "string" },
+        "comments": { "type": "array" }
+      },
+      "required": ["id", "title", "description", "category", "status", "creatorId", "createdAt"]
+    },
+    "LostFoundItem": {
+      "title": "Lost & Found Item",
+      "description": "Lost or found item posted by community members.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string", "enum": ["lost", "found"] },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "location": { "type": "string" },
+        "date": { "type": "string" },
+        "image": { "type": "string" },
+        "contactInfo": { "type": "string" },
+        "creatorId": { "type": "string" },
+        "creatorName": { "type": "string" },
+        "creatorAvatar": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "type", "name", "category", "description", "contactInfo", "creatorId", "createdAt"]
+    },
+    "LocalJob": {
+      "title": "Local Job Posting",
+      "description": "Local job opportunities in the neighborhood.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "employer": { "type": "string" },
+        "location": { "type": "string" },
+        "category": { "type": "string" },
+        "salary": { "type": "string" },
+        "contactNumber": { "type": "string" },
+        "description": { "type": "string" },
+        "creatorId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "title", "employer", "location", "category", "contactNumber", "creatorId", "createdAt"]
+    },
+    "CommunityPoll": {
+      "title": "Community Poll",
+      "description": "Civic opinion polling for area initiatives.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "question": { "type": "string" },
+        "options": { "type": "array" },
+        "userVotes": { "type": "object" },
+        "totalVotes": { "type": "integer" },
+        "endDate": { "type": "string" },
+        "category": { "type": "string" }
+      },
+      "required": ["id", "question", "options", "userVotes", "totalVotes"]
+    },
+    "Notification": {
+      "title": "User Notification",
+      "description": "System alerts or civic status update notifications.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "type": { "type": "string" },
+        "read": { "type": "boolean" },
+        "relatedId": { "type": "string" }
+      },
+      "required": ["id", "title", "description", "timestamp", "type", "read"]
+    },
+    "Suggestion": {
+      "title": "Civic Suggestion",
+      "description": "Area planning proposals submitted by residents.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "area": { "type": "string" },
+        "creatorName": { "type": "string" },
+        "creatorAvatar": { "type": "string" },
+        "upvotes": { "type": "integer" },
+        "upvotedBy": { "type": "array" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "title", "description", "category", "status", "createdAt"]
+    },
+    "VolunteerEvent": {
+      "title": "Volunteer Event",
+      "description": "Civic action drives and volunteering events.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "date": { "type": "string" },
+        "location": { "type": "string" },
+        "organizer": { "type": "string" },
+        "image": { "type": "string" },
+        "participants": { "type": "array" },
+        "maxParticipants": { "type": "integer" }
+      },
+      "required": ["id", "title", "description", "category", "date", "location", "organizer", "participants"]
+    },
+    "VolunteerProfile": {
+      "title": "Volunteer Profile",
+      "description": "Civic volunteering record and expertise of a user.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "avatar": { "type": "string" },
+        "area": { "type": "string" },
+        "skills": { "type": "array" },
+        "participationCount": { "type": "integer" },
+        "history": { "type": "array" }
+      },
+      "required": ["id", "name", "area"]
+    },
+    "AreaGroup": {
+      "title": "Neighborhood Group",
+      "description": "Local interest or resident group chat boards.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "memberCount": { "type": "integer" },
+        "members": { "type": "array" },
+        "image": { "type": "string" }
+      },
+      "required": ["id", "name", "description", "category", "memberCount", "members"]
+    },
+    "GroupPost": {
+      "title": "Group Discussion Post",
+      "description": "Message thread postings inside neighborhood groups.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "groupId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "authorAvatar": { "type": "string" },
+        "content": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "likes": { "type": "integer" },
+        "likedBy": { "type": "array" }
+      },
+      "required": ["id", "groupId", "authorName", "content", "timestamp"]
+    },
+    "ImpactItem": {
+      "title": "Impact Item",
+      "description": "Before/After showcase of resolved municipal grievances.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "area": { "type": "string" },
+        "resolutionDate": { "type": "string" },
+        "beforeImage": { "type": "string" },
+        "afterImage": { "type": "string" },
+        "feedback": { "type": "string" },
+        "officerName": { "type": "string" }
+      },
+      "required": ["id", "title", "description", "resolutionDate", "beforeImage", "afterImage"]
+    },
+    "LeaderboardUser": {
+      "title": "Leaderboard Rank User",
+      "description": "Rank metric snapshot for active neighborhood residents.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "avatar": { "type": "string" },
+        "area": { "type": "string" },
+        "score": { "type": "integer" },
+        "complaintsSubmitted": { "type": "integer" },
+        "suggestionsMade": { "type": "integer" },
+        "pollsParticipated: ": { "type": "integer" },
+        "volunteeredCount": { "type": "integer" },
+        "badges": { "type": "array" }
+      },
+      "required": ["id", "name", "score"]
+    },
+    "WardProject": {
+      "title": "Ward Project",
+      "description": "Public infrastructure budget and status updates.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "status": { "type": "string" },
+        "progress": { "type": "integer" },
+        "budget": { "type": "string" },
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" },
+        "contractor": { "type": "string" }
+      },
+      "required": ["id", "title", "status", "progress", "budget"]
+    }
+  },
+  "firestore": {
+    "users": { "schema": "User", "description": "Global register of civic platform users." },
+    "complaints": { "schema": "Complaint", "description": "All public and private grievances reported by residents." },
+    "lost_found": { "schema": "LostFoundItem", "description": "Community lost & found circular." },
+    "jobs": { "schema": "LocalJob", "description": "Neighborhood small-scale blue/grey collar postings." },
+    "polls": { "schema": "CommunityPoll", "description": "Civic interest voting polls." },
+    "notifications": { "schema": "Notification", "description": "System notices and event reminders." },
+    "suggestions": { "schema": "Suggestion", "description": "Citizen infrastructure recommendations." },
+    "volunteer_events": { "schema": "VolunteerEvent", "description": "Civic volunteer meetups." },
+    "volunteer_profiles": { "schema": "VolunteerProfile", "description": "Local volunteer credentials." },
+    "groups": { "schema": "AreaGroup", "description": "Neighborhood interest boards." },
+    "group_posts": { "schema": "GroupPost", "description": "Individual messages in neighborhood interest boards." },
+    "impact_items": { "schema": "ImpactItem", "description": "Visual history of civic achievements." },
+    "leaderboard_users": { "schema": "LeaderboardUser", "description": "Citizen performance rankings." },
+    "ward_projects": { "schema": "WardProject", "description": "Government projects and milestones." }
+  }
+}
