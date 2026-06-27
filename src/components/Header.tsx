@@ -30,29 +30,12 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
         <NammaLogo variant="navbar" />
       </button>
 
-      <div className="flex items-center gap-2">
-        {/* Instant Language Switcher */}
-        <div className="flex items-center gap-1 text-[10px] font-semibold text-slate-300 select-none bg-slate-50 border border-slate-100 rounded-full px-2 py-0.5">
-          <button
-            onClick={() => setLanguage('en')}
-            className={`hover:text-blue-600 transition-colors cursor-pointer ${language === 'en' ? 'text-blue-600 font-bold' : 'text-slate-500'}`}
-          >
-            EN
-          </button>
-          <span className="text-slate-200">|</span>
-          <button
-            onClick={() => setLanguage('ta')}
-            className={`hover:text-blue-600 transition-colors cursor-pointer ${language === 'ta' ? 'text-blue-600 font-bold' : 'text-slate-500'}`}
-          >
-            தமிழ்
-          </button>
-        </div>
-
+      <div className="flex items-center gap-3">
         {/* Dynamic Notification Badge */}
         <button
           id="btn-header-notifications"
           onClick={() => navigateTo('/notifications')}
-          className="relative flex items-center gap-1.5 bg-slate-50 border border-slate-100 hover:border-blue-500 hover:bg-blue-50 text-slate-700 hover:text-blue-600 px-2 py-0.5 rounded-full text-[10px] font-semibold transition-all duration-150 cursor-pointer active:scale-95"
+          className="relative flex items-center gap-1.5 bg-slate-50 border border-slate-100 hover:border-blue-500 hover:bg-blue-50 text-slate-700 hover:text-blue-600 px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all duration-150 cursor-pointer active:scale-95"
           title="Notifications"
         >
           <span>🔔</span>
@@ -63,7 +46,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
           <button
             id="btn-header-profile"
             onClick={() => navigateTo('/profile')}
-            className="w-7 h-7 rounded-full border border-slate-200 overflow-hidden cursor-pointer shadow-sm focus:outline-none hover:border-blue-600 active:scale-95 transition-transform"
+            className="w-9 h-9 rounded-full border border-slate-200 overflow-hidden cursor-pointer shadow-sm focus:outline-none hover:border-blue-600 active:scale-95 transition-transform"
           >
             <img 
               src={currentUser.avatar} 
@@ -78,16 +61,16 @@ export const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
             onClick={() => navigateTo('/login')}
             className="text-slate-600 hover:text-blue-600 cursor-pointer focus:outline-none active:scale-95 transition-transform"
           >
-            <User size={18} />
+            <User size={24} />
           </button>
         )}
         
         <button 
           id="btn-header-menu"
-          className="text-slate-600 hover:text-blue-600 cursor-pointer focus:outline-none active:scale-95 transition-transform"
+          className="text-slate-600 hover:text-blue-600 cursor-pointer focus:outline-none active:scale-95 transition-transform flex items-center justify-center"
           onClick={onMenuClick}
         >
-          <Menu size={18} />
+          <Menu size={24} />
         </button>
       </div>
     </header>

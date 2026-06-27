@@ -31,7 +31,6 @@ import { MarketplaceView } from './views/MarketplaceView';
 import { SettingsView } from './views/SettingsView';
 import { HelpView } from './views/HelpView';
 import { AboutView } from './views/AboutView';
-import { BrandView } from './views/BrandView';
 
 // Added extended civic views
 import { NotificationsView } from './views/NotificationsView';
@@ -88,7 +87,6 @@ const AppContent: React.FC = () => {
     if (path === '/settings') return <ProtectedRoute><SettingsView /></ProtectedRoute>;
     if (path === '/help') return <ProtectedRoute><HelpView /></ProtectedRoute>;
     if (path === '/about') return <ProtectedRoute><AboutView /></ProtectedRoute>;
-    if (path === '/brand') return <ProtectedRoute><BrandView /></ProtectedRoute>;
     
     // Added routes for extended civic views
     if (path === '/notifications') return <ProtectedRoute><NotificationsView /></ProtectedRoute>;

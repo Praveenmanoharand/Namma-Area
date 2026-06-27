@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { 
   Home, LayoutDashboard, PlusCircle, Megaphone, Vote, FileText, 
   Heart, ShieldAlert, Wrench, ShoppingBag, Package, Phone, 
-  User, Settings, HelpCircle, Info, LogOut, X, Bell, UserPlus, LogIn, Sparkles
+  User, Settings, HelpCircle, Info, LogOut, X, Bell, UserPlus, LogIn
 } from 'lucide-react';
 import { useRouter } from '../router';
 import { getCurrentUser, logout } from '../db';
@@ -32,7 +32,6 @@ export const NavigationDrawer: React.FC<NavigationDrawerProps> = ({ isOpen, onCl
     { labelKey: 'marketplace', href: '/marketplace', icon: <ShoppingBag size={16} /> },
     { labelKey: 'lostFound', href: '/lost-found', icon: <Package size={16} /> },
     { labelKey: 'emergency', href: '/emergency', icon: <Phone size={16} /> },
-    { labelKey: 'brandIdentity', href: '/brand', icon: <Sparkles size={16} className="text-amber-500" /> },
     { labelKey: 'profile', href: '/profile', icon: <User size={16} /> },
     { labelKey: 'settings', href: '/settings', icon: <Settings size={16} /> },
     { labelKey: 'help', href: '/help', icon: <HelpCircle size={16} /> },

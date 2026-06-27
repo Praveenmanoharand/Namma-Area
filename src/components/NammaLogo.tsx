@@ -19,6 +19,7 @@ export const NammaLogo: React.FC<NammaLogoProps> = ({
   size
 }) => {
   const isDark = mode === 'dark';
+  const [imgError, setImgError] = useState(false);
 
   // State to read active concept dynamically from localStorage
   const [activeConcept, setActiveConcept] = useState<LogoConcept>(() => {
@@ -74,282 +75,172 @@ export const NammaLogo: React.FC<NammaLogoProps> = ({
 
   const { width, height } = getDimensions();
 
-  // Render the SVGs for the different concepts
+  // Render the SVGs for the perfect concept
   const renderSymbolSVG = (symbolSize: number = 100, targetConcept: LogoConcept) => {
-    switch (targetConcept) {
-      case 'concept1': // Concept 1: Tamil "ந" + Community
-        return (
-          <svg
-            width={symbolSize}
-            height={symbolSize}
-            viewBox="0 0 100 100"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="overflow-visible"
-          >
-            {/* Elegant community nodes (people) forming a supportive arch */}
-            <motion.circle cx="28" cy="20" r="3.5" fill={greenColor} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.1 }} />
-            <motion.circle cx="50" cy="14" r="4.5" fill={greenColor} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2 }} />
-            <motion.circle cx="72" cy="20" r="3.5" fill={greenColor} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.3 }} />
-            
-            {/* Top horizontal bar of 'ந' */}
-            <motion.path
-              d="M 30 35 H 70"
-              stroke={blueColor}
-              strokeWidth="7.5"
-              strokeLinecap="round"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 1 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-            />
-            {/* Left vertical pillar */}
-            <motion.path
-              d="M 38 35 V 70"
-              stroke={blueColor}
-              strokeWidth="7.5"
-              strokeLinecap="round"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
-            />
-            {/* Sweeping curve of "ந" forming the perfect loop */}
-            <motion.path
-              d="M 62 35 V 48 C 62 54, 56 58, 50 58 C 44 58, 41 53, 44 47 C 47 41, 56 42, 61 46 C 66 50, 68 58, 68 70"
-              stroke={blueColor}
-              strokeWidth="7.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            />
-          </svg>
-        );
-
-      case 'concept2': // Concept 2: Tamil "ந" + House
-        return (
-          <svg
-            width={symbolSize}
-            height={symbolSize}
-            viewBox="0 0 100 100"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="overflow-visible"
-          >
-            {/* House roof silhouette integrating with the top bar of 'ந' */}
-            <motion.path
-              d="M 20 40 L 50 18 L 80 40"
-              stroke={greenColor}
-              strokeWidth="7.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 1 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-            />
-
-            {/* Left pillar of 'ந' acting as the left wall of the house */}
-            <motion.path
-              d="M 38 40 V 72"
-              stroke={blueColor}
-              strokeWidth="7.5"
-              strokeLinecap="round"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-            />
-
-            {/* Right sweeping 'ந' loop acting as the interior door and dynamic flow of the house */}
-            <motion.path
-              d="M 62 40 V 50 C 62 56, 56 60, 50 60 C 44 60, 41 55, 44 49 C 47 43, 56 44, 61 48 C 66 52, 68 60, 68 72"
-              stroke={blueColor}
-              strokeWidth="7.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-            />
-          </svg>
-        );
-
-      case 'concept3': // Concept 3: Tamil "ந" + Neighborhood Grid
-        return (
-          <svg
-            width={symbolSize}
-            height={symbolSize}
-            viewBox="0 0 100 100"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="overflow-visible"
-          >
-            {/* Background neighborhood grid blocks (subtle tech overlay) */}
-            <motion.rect x="25" y="25" width="12" height="12" rx="3" fill={blueColor} fillOpacity="0.08" initial={{ opacity: 0 }} animate={{ opacity: 1 }} />
-            <motion.rect x="42" y="25" width="12" height="12" rx="3" fill={blueColor} fillOpacity="0.08" initial={{ opacity: 0 }} animate={{ opacity: 1 }} />
-            <motion.rect x="59" y="25" width="12" height="12" rx="3" fill={blueColor} fillOpacity="0.08" initial={{ opacity: 0 }} animate={{ opacity: 1 }} />
-            <motion.rect x="25" y="42" width="12" height="12" rx="3" fill={greenColor} fillOpacity="0.08" initial={{ opacity: 0 }} animate={{ opacity: 1 }} />
-            <motion.rect x="42" y="42" width="12" height="12" rx="3" fill={blueColor} fillOpacity="0.08" initial={{ opacity: 0 }} animate={{ opacity: 1 }} />
-            <motion.rect x="59" y="42" width="12" height="12" rx="3" fill={greenColor} fillOpacity="0.08" initial={{ opacity: 0 }} animate={{ opacity: 1 }} />
-            <motion.rect x="25" y="59" width="12" height="12" rx="3" fill={blueColor} fillOpacity="0.08" initial={{ opacity: 0 }} animate={{ opacity: 1 }} />
-            <motion.rect x="42" y="59" width="12" height="12" rx="3" fill={greenColor} fillOpacity="0.08" initial={{ opacity: 0 }} animate={{ opacity: 1 }} />
-            <motion.rect x="59" y="59" width="12" height="12" rx="3" fill={blueColor} fillOpacity="0.08" initial={{ opacity: 0 }} animate={{ opacity: 1 }} />
-
-            {/* Geometric "ந" on top of the neighborhood grid */}
-            <motion.path
-              d="M 30 35 H 70"
-              stroke={blueColor}
-              strokeWidth="7.5"
-              strokeLinecap="round"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 0.6 }}
-            />
-            <motion.path
-              d="M 38 35 V 70"
-              stroke={blueColor}
-              strokeWidth="7.5"
-              strokeLinecap="round"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-            />
-            <motion.path
-              d="M 62 35 V 48 C 62 54, 56 58, 50 58 C 44 58, 41 53, 44 47 C 47 41, 56 42, 61 46 C 66 50, 68 58, 68 70"
-              stroke={greenColor}
-              strokeWidth="7.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            />
-          </svg>
-        );
-
-      case 'concept4': // Concept 4: Tamil "ந" + Community Circle
-        return (
-          <svg
-            width={symbolSize}
-            height={symbolSize}
-            viewBox="0 0 100 100"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="overflow-visible"
-          >
-            {/* Circular community ring of citizens gathering around */}
-            <motion.circle
-              cx="50"
-              cy="50"
-              r="38"
-              stroke={greenColor}
-              strokeWidth="3.5"
-              strokeDasharray="6 6"
-              initial={{ rotate: 0, opacity: 0 }}
-              animate={{ rotate: 360, opacity: 0.7 }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            />
-            <motion.circle
-              cx="50"
-              cy="50"
-              r="43"
-              stroke={blueColor}
-              strokeWidth="1.5"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 0.4 }}
-              transition={{ duration: 0.8 }}
-            />
-
-            {/* Tamil letter 'ந' centered inside the community circle */}
-            <motion.path
-              d="M 34 38 H 66"
-              stroke={blueColor}
-              strokeWidth="6.5"
-              strokeLinecap="round"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-            />
-            <motion.path
-              d="M 41 38 V 65"
-              stroke={blueColor}
-              strokeWidth="6.5"
-              strokeLinecap="round"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ delay: 0.3, duration: 0.5 }}
-            />
-            <motion.path
-              d="M 59 38 V 46 C 59 51, 55 55, 50 55 C 45 55, 42 51, 45 46 C 48 41, 55 42, 59 45 C 63 48, 64 54, 64 65"
-              stroke={blueColor}
-              strokeWidth="6.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ delay: 0.4, duration: 0.7 }}
-            />
-          </svg>
-        );
-
-      case 'concept5': // Concept 5: Modern Monogram "ந + A" (Area)
-        return (
-          <svg
-            width={symbolSize}
-            height={symbolSize}
-            viewBox="0 0 100 100"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="overflow-visible"
-          >
-            {/* The structural Latin letter 'A' legs */}
-            <motion.path
-              d="M 50 18 L 24 76"
-              stroke={blueColor}
-              strokeWidth="7.5"
-              strokeLinecap="round"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 1 }}
-              transition={{ duration: 0.7 }}
-            />
-            <motion.path
-              d="M 50 18 L 76 76"
-              stroke={blueColor}
-              strokeWidth="7.5"
-              strokeLinecap="round"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 1 }}
-              transition={{ duration: 0.7, delay: 0.1 }}
-            />
-
-            {/* Pitched Roof element serving as the apex of both "A" and geometric protection */}
-            <motion.path
-              d="M 37 46 L 50 18 L 63 46"
-              stroke={greenColor}
-              strokeWidth="7.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-            />
-
-            {/* Seamless loop crossbar of 'A' forming the Tamil 'ந' right side loop */}
-            <motion.path
-              d="M 36 50 H 58 V 59 C 58 64, 53 68, 47 68 C 41 68, 37 63, 40 57 C 43 51, 52 52, 57 56 C 61 60, 63 68, 63 76"
-              stroke={blueColor}
-              strokeWidth="6.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={{ pathLength: 1, opacity: 1 }}
-              transition={{ delay: 0.3, duration: 0.8 }}
-            />
-          </svg>
-        );
-
-      default:
-        return null;
+    if (!imgError) {
+      return (
+        <img
+          src="/logo.png"
+          alt="Namma Area Logo"
+          width={symbolSize}
+          height={symbolSize}
+          className="object-contain"
+          onError={() => setImgError(true)}
+        />
+      );
     }
+
+    return (
+      <svg
+        width={symbolSize}
+        height={symbolSize}
+        viewBox="0 0 100 100"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="overflow-visible"
+      >
+        {/* House Roof (Green #10B981) */}
+        <motion.path
+          d="M 12 34 L 50 8 L 88 34"
+          stroke={greenColor}
+          strokeWidth="6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        />
+        
+        {/* Chimney (Green #10B981) */}
+        <motion.path
+          d="M 68 22 V 12 H 74 V 22"
+          stroke={greenColor}
+          strokeWidth="5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill={greenColor}
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+        />
+        
+        {/* 4-Pane Window (Green #10B981) */}
+        <motion.g
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+        >
+          <rect x="45.5" y="18" width="3.5" height="3.5" fill={greenColor} rx="0.5" />
+          <rect x="51" y="18" width="3.5" height="3.5" fill={greenColor} rx="0.5" />
+          <rect x="45.5" y="23.5" width="3.5" height="3.5" fill={greenColor} rx="0.5" />
+          <rect x="51" y="23.5" width="3.5" height="3.5" fill={greenColor} rx="0.5" />
+        </motion.g>
+        
+        {/* Tamil Letter "ந" (Blue #2563EB) */}
+        {/* Top bar */}
+        <motion.path
+          d="M 29 32 H 66"
+          stroke={blueColor}
+          strokeWidth="8"
+          strokeLinecap="round"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ delay: 0.1, duration: 0.5 }}
+        />
+        {/* Left leg/pillar */}
+        <motion.path
+          d="M 34 32 V 58"
+          stroke={blueColor}
+          strokeWidth="8"
+          strokeLinecap="round"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ delay: 0.25, duration: 0.5 }}
+        />
+        {/* Middle leg/pillar */}
+        <motion.path
+          d="M 50 32 V 58"
+          stroke={blueColor}
+          strokeWidth="8"
+          strokeLinecap="round"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+        />
+        {/* Right curve and bottom sweep */}
+        <motion.path
+          d="M 50 40 C 58 40, 71 44, 71 54 C 71 64, 58 68, 38 68 C 30 68, 28 64, 28 60"
+          stroke={blueColor}
+          strokeWidth="8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ delay: 0.45, duration: 0.7 }}
+        />
+        
+        {/* Community Circle (People) */}
+        {/* Left Blue Person */}
+        <motion.circle
+          cx="13"
+          cy="58"
+          r="5"
+          fill={blueColor}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.5, type: 'spring' }}
+        />
+        <motion.path
+          d="M 8 64 C 8 84, 24 93, 50 93"
+          stroke={blueColor}
+          strokeWidth="5"
+          strokeLinecap="round"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ delay: 0.6, duration: 0.6 }}
+        />
+        
+        {/* Right Blue Person */}
+        <motion.circle
+          cx="87"
+          cy="58"
+          r="5"
+          fill={blueColor}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.5, type: 'spring' }}
+        />
+        <motion.path
+          d="M 92 64 C 92 84, 76 93, 50 93"
+          stroke={blueColor}
+          strokeWidth="5"
+          strokeLinecap="round"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ delay: 0.6, duration: 0.6 }}
+        />
+        
+        {/* Center Bottom Green Person */}
+        <motion.circle
+          cx="50"
+          cy="78"
+          r="5"
+          fill={greenColor}
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.7, type: 'spring' }}
+        />
+        <motion.path
+          d="M 23 72 C 32 84, 68 84, 77 72"
+          stroke={greenColor}
+          strokeWidth="5"
+          strokeLinecap="round"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ delay: 0.8, duration: 0.5 }}
+        />
+      </svg>
+    );
   };
 
   // 1. Favicon Version
@@ -378,9 +269,8 @@ export const NammaLogo: React.FC<NammaLogoProps> = ({
         </div>
         <span 
           className="text-[9px] font-black tracking-widest mt-2.5 uppercase font-sans"
-          style={{ color: textColor }}
         >
-          NAMMA AREA
+          <span style={{ color: blueColor }}>NAMMA</span> <span style={{ color: greenColor }}>AREA</span>
         </span>
       </div>
     );
@@ -403,9 +293,8 @@ export const NammaLogo: React.FC<NammaLogoProps> = ({
         <div>
           <h1 
             className="text-base font-semibold tracking-widest uppercase font-sans leading-none"
-            style={{ color: textColor }}
           >
-            NAMMA AREA
+            <span style={{ color: blueColor }}>NAMMA</span> <span style={{ color: greenColor }}>AREA</span>
           </h1>
           <p 
             className="text-[10px] font-semibold mt-1.5 tracking-wide leading-none font-sans"
@@ -448,9 +337,8 @@ export const NammaLogo: React.FC<NammaLogoProps> = ({
       <div className="flex flex-col leading-none">
         <span 
           className="text-[12.5px] font-semibold tracking-wider uppercase font-sans"
-          style={{ color: textColor }}
         >
-          NAMMA AREA
+          <span style={{ color: blueColor }}>NAMMA</span> <span style={{ color: greenColor }}>AREA</span>
         </span>
         <span 
           className="text-[8.5px] font-semibold tracking-wide mt-1 font-sans text-slate-500"

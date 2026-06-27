@@ -47,29 +47,6 @@ export const AboutView: React.FC = () => {
         </div>
       </div>
 
-      {/* Brand Design Language Showcase CTA */}
-      <button 
-        id="btn-about-brand-identity"
-        onClick={() => navigateTo('/brand')}
-        className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-2xl p-4.5 shadow-md flex items-center justify-between text-left cursor-pointer hover:from-blue-700 hover:to-indigo-800 transition-all duration-200 select-none relative overflow-hidden group"
-      >
-        <div className="absolute right-0 bottom-0 translate-x-6 translate-y-6 w-24 h-24 bg-white/10 rounded-full blur-xl group-hover:scale-125 transition-all duration-500"></div>
-        <div className="relative z-10 pr-2">
-          <span className="text-[8px] bg-white/20 text-white font-black px-2 py-0.5 rounded uppercase tracking-widest">
-            Design & Culture
-          </span>
-          <h4 className="font-black text-xs text-white mt-1.5 leading-tight">
-            Explore Brand Identity & Logo
-          </h4>
-          <p className="text-[9px] text-blue-100 mt-1 font-bold">
-            Understand the Tamil "ந", House Roof, and Circle geometry.
-          </p>
-        </div>
-        <div className="bg-white/10 p-2.5 rounded-xl border border-white/25 shrink-0 hover:bg-white/20 transition-all">
-          <Sparkles size={16} className="text-amber-300 fill-amber-300" />
-        </div>
-      </button>
-
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-3">
         <div className="bg-white border border-slate-200 p-3 rounded-xl text-center shadow-xs">
