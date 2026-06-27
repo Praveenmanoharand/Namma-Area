@@ -149,18 +149,18 @@ export const SettingsView: React.FC = () => {
             {t('contactInfoDesc')}
           </p>
 
-          <div className="flex gap-2.5 mt-1">
+          <div className="flex flex-col gap-2.5 mt-1">
             <input
               type="tel"
               required
               value={formPhone}
               onChange={(e) => setFormPhone(e.target.value)}
               placeholder="e.g. 9845012345"
-              className="flex-1 px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-medium"
+              className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-medium bg-slate-50"
             />
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md cursor-pointer transition-all duration-150"
+              className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md cursor-pointer transition-all duration-150 active:scale-[0.98]"
             >
               {t('saveChange')}
             </button>
