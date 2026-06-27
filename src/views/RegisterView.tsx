@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from '../router';
 import { register } from '../db';
 import { useAuth } from '../context/AuthContext';
 import { MapPin, User, Mail, Compass, Sparkles, Phone, Lock } from 'lucide-react';
+import { detectLocation, GeocodedLocation } from '../utils/geocoder';
+import { TN_DISTRICTS_UNIQUE, buildAreaString } from '../data/tamilnadu-wards';
 
 export const RegisterView: React.FC = () => {
   const { navigateTo } = useRouter();
@@ -11,10 +13,64 @@ export const RegisterView: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
-  const [area, setArea] = useState('Ward 4, Indiranagar, Bengaluru');
+  const [area, setArea] = useState(() => {
+    return localStorage.getItem('namma_preferred_location') || 'Ward 108 • Anna Nagar West';
+  });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showConfigWarning, setShowConfigWarning] = useState(false);
+
+  // Guided Location Detection states
+  const [locationStep, setLocationStep] = useState<'idle' | 'detecting' | 'confirmed' | 'unidentified' | 'denied' | 'manual'>('idle');
+  const [detectedLoc, setDetectedLoc] = useState<GeocodedLocation | null>(null);
+  const [simulateUnidentified, setSimulateUnidentified] = useState(false);
+  const [selectedWardManual, setSelectedWardManual] = useState('Ward 15 - Anna Nagar');
+  const [manualDistrict, setManualDistrict] = useState('Chennai');
+  const [manualWard, setManualWard] = useState('Ward 15 - Anna Nagar');
+
+  // Trigger manual ward update when unidentified detected district changes
+  useEffect(() => {
+    if (detectedLoc && !detectedLoc.ward) {
+      const list = TN_DISTRICTS_UNIQUE.find(d => d.name === detectedLoc.district)?.wards || [];
+      if (list.length > 0) {
+        setSelectedWardManual(list[0]);
+      }
+    }
+  }, [detectedLoc?.district]);
+
+  const handleDetectLocation = async () => {
+    try {
+      setLocationStep('detecting');
+      const loc = await detectLocation(simulateUnidentified);
+      setDetectedLoc(loc);
+      if (loc.ward) {
+        setLocationStep('confirmed');
+      } else {
+        setLocationStep('unidentified');
+      }
+    } catch (err) {
+      console.error('Location detection failed:', err);
+      setLocationStep('denied');
+    }
+  };
+
+  const handleUseLocation = () => {
+    if (!detectedLoc) return;
+    const finalWard = detectedLoc.ward || selectedWardManual;
+    // Format: Ward X • Area Name
+    const cleanArea = `${finalWard} • ${detectedLoc.area}`;
+    setArea(cleanArea);
+    localStorage.setItem('namma_preferred_location', cleanArea);
+    setLocationStep('idle');
+  };
+
+  const handleSaveManualLocation = () => {
+    // Format: Ward X • Area Name
+    const cleanArea = `${manualWard} • ${manualDistrict}`;
+    setArea(cleanArea);
+    localStorage.setItem('namma_preferred_location', cleanArea);
+    setLocationStep('idle');
+  };
 
   const handleGoogleSignIn = async () => {
     try {
@@ -213,24 +269,233 @@ export const RegisterView: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-1">
-          <label className="text-[10px] font-bold text-slate-700 uppercase tracking-wider">Your Residential Ward</label>
-          <div className="relative">
-            <Compass size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-            <select
-              id="register-input-area"
-              value={area}
-              disabled={loading}
-              onChange={(e) => setArea(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-xs focus:bg-white focus:border-blue-600 outline-none transition-all duration-200 appearance-none cursor-pointer disabled:opacity-60"
-            >
-              <option value="Ward 4, Indiranagar, Bengaluru">Ward 4, Indiranagar, Bengaluru</option>
-              <option value="Ward 12, Koramangala, Bengaluru">Ward 12, Koramangala, Bengaluru</option>
-              <option value="Ward 18, Jayanagar, Bengaluru">Ward 18, Jayanagar, Bengaluru</option>
-              <option value="Ward 25, Whitefield, Bengaluru">Ward 25, Whitefield, Bengaluru</option>
-              <option value="Ward 33, Malleshwaram, Bengaluru">Ward 33, Malleshwaram, Bengaluru</option>
-            </select>
-          </div>
+        {/* Guided Location Detection Experience */}
+        <div className="flex flex-col gap-1 border border-slate-200 bg-slate-50/50 rounded-2xl p-4.5">
+          <label className="text-[10px] font-bold text-slate-700 uppercase tracking-wider block mb-1">
+            Your Residential Ward
+          </label>
+
+          {locationStep === 'idle' && (
+            <div className="flex flex-col gap-3">
+              <button
+                type="button"
+                id="btn-detect-location"
+                onClick={handleDetectLocation}
+                disabled={loading}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-4 rounded-xl font-bold text-xs shadow-md transition-all duration-150 flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+              >
+                <Compass size={14} className="animate-pulse" />
+                📍 Detect My Area Automatically
+              </button>
+              <p className="text-[10px] text-slate-500 font-medium leading-relaxed text-center">
+                Automatically detect your district and ward using your current location.
+              </p>
+              <div className="flex justify-between items-center mt-1 border-t border-slate-100 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setLocationStep('manual')}
+                  className="text-[10px] text-blue-600 font-bold hover:underline cursor-pointer bg-transparent border-none"
+                >
+                  Select manually instead
+                </button>
+                {/* Developer override for testing unidentified ward */}
+                <label className="flex items-center gap-1.5 cursor-pointer text-[9px] text-slate-400 font-bold">
+                  <input
+                    type="checkbox"
+                    checked={simulateUnidentified}
+                    onChange={(e) => setSimulateUnidentified(e.target.checked)}
+                    className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 w-3 h-3"
+                  />
+                  Test Unidentified
+                </label>
+              </div>
+            </div>
+          )}
+
+          {locationStep === 'detecting' && (
+            <div className="flex flex-col items-center justify-center py-5 gap-3.5">
+              <div className="w-10 h-10 rounded-full border-4 border-blue-100 border-t-blue-600 animate-spin flex items-center justify-center">
+                <Compass size={16} className="text-blue-600 animate-pulse" />
+              </div>
+              <div className="text-center">
+                <h4 className="text-xs font-bold text-slate-800">📡 Detecting your location...</h4>
+                <p className="text-[9px] text-slate-400 font-medium mt-1">Please allow location access if prompted</p>
+              </div>
+            </div>
+          )}
+
+          {(locationStep === 'confirmed' || locationStep === 'unidentified') && detectedLoc && (
+            <div className="flex flex-col gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <div className="flex items-center gap-2 text-emerald-600 font-bold text-xs border-b border-slate-100 pb-2">
+                <span className="text-sm">📍</span>
+                <span>We found your location</span>
+                {locationStep === 'confirmed' && (
+                  <span className="ml-auto bg-emerald-50 text-emerald-700 text-[8px] font-black px-2 py-0.5 rounded-full uppercase border border-emerald-200">
+                    Auto Detected
+                  </span>
+                )}
+              </div>
+
+              {/* Location Data Table */}
+              <div className="grid grid-cols-2 gap-y-2 gap-x-4 bg-white border border-slate-100 rounded-xl p-3 text-[10px]">
+                <div className="font-bold text-slate-400 uppercase tracking-wider">State</div>
+                <div className="font-extrabold text-slate-800 text-right">{detectedLoc.state}</div>
+
+                <div className="font-bold text-slate-400 uppercase tracking-wider border-t border-slate-50 pt-1.5">District</div>
+                <div className="font-extrabold text-slate-800 text-right border-t border-slate-50 pt-1.5">{detectedLoc.district}</div>
+
+                <div className="font-bold text-slate-400 uppercase tracking-wider border-t border-slate-50 pt-1.5">Local Body</div>
+                <div className="font-extrabold text-slate-800 text-right border-t border-slate-50 pt-1.5">{detectedLoc.localBody}</div>
+
+                {detectedLoc.zone && (
+                  <>
+                    <div className="font-bold text-slate-400 uppercase tracking-wider border-t border-slate-50 pt-1.5">Zone</div>
+                    <div className="font-extrabold text-slate-800 text-right border-t border-slate-50 pt-1.5">{detectedLoc.zone}</div>
+                  </>
+                )}
+
+                {detectedLoc.ward ? (
+                  <>
+                    <div className="font-bold text-slate-400 uppercase tracking-wider border-t border-slate-50 pt-1.5">Ward</div>
+                    <div className="font-extrabold text-blue-600 text-right border-t border-slate-50 pt-1.5 font-sans">{detectedLoc.ward}</div>
+                  </>
+                ) : (
+                  <>
+                    <div className="font-bold text-slate-400 uppercase tracking-wider border-t border-slate-50 pt-1.5">Ward</div>
+                    <div className="font-extrabold text-slate-800 text-right border-t border-slate-50 pt-1.5">
+                      <select
+                        value={selectedWardManual}
+                        onChange={(e) => setSelectedWardManual(e.target.value)}
+                        className="text-[10px] font-bold text-blue-600 border border-slate-200 rounded px-1.5 py-0.5 focus:outline-none focus:border-blue-600"
+                      >
+                        {TN_DISTRICTS_UNIQUE.find(d => d.name === detectedLoc.district)?.wards.map(w => (
+                          <option key={w} value={w}>{w}</option>
+                        )) || <option value="">No wards found</option>}
+                      </select>
+                    </div>
+                  </>
+                )}
+
+                <div className="font-bold text-slate-400 uppercase tracking-wider border-t border-slate-50 pt-1.5">Area</div>
+                <div className="font-extrabold text-slate-800 text-right border-t border-slate-50 pt-1.5">{detectedLoc.area}</div>
+
+                <div className="font-bold text-slate-400 uppercase tracking-wider border-t border-slate-50 pt-1.5">Accuracy</div>
+                <div className="font-extrabold text-emerald-600 text-right border-t border-slate-50 pt-1.5">{detectedLoc.accuracy}</div>
+              </div>
+
+              {locationStep === 'unidentified' && (
+                <div className="text-center bg-amber-50 border border-amber-100 text-amber-800 rounded-xl p-2.5 text-[10px] font-semibold">
+                  ⚠️ We couldn't determine your Ward automatically. Please select it manually above.
+                </div>
+              )}
+
+              <div className="flex gap-2.5 mt-1">
+                <button
+                  type="button"
+                  onClick={() => setLocationStep('manual')}
+                  className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 rounded-xl font-bold text-xs transition-colors cursor-pointer text-center"
+                >
+                  ✏ Change Manually
+                </button>
+                <button
+                  type="button"
+                  onClick={handleUseLocation}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-xl font-bold text-xs shadow-sm transition-colors cursor-pointer text-center flex items-center justify-center gap-1"
+                >
+                  ✔ Use This Location
+                </button>
+              </div>
+            </div>
+          )}
+
+          {locationStep === 'denied' && (
+            <div className="flex flex-col gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300 py-2">
+              <div className="flex items-start gap-2.5 text-amber-700 bg-amber-50 border border-amber-100 rounded-xl p-3.5">
+                <span className="text-base mt-0.5">⚠️</span>
+                <div>
+                  <h4 className="font-bold text-xs text-amber-950">Location access is disabled.</h4>
+                  <p className="text-[10px] text-slate-600 mt-1 leading-relaxed">
+                    You can continue by selecting your District and Ward manually.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-2.5 mt-1">
+                <button
+                  type="button"
+                  onClick={() => setLocationStep('manual')}
+                  className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition-colors cursor-pointer text-center"
+                >
+                  Select Manually
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDetectLocation}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-xl font-bold text-xs shadow-sm transition-colors cursor-pointer text-center"
+                >
+                  Enable Location
+                </button>
+              </div>
+            </div>
+          )}
+
+          {locationStep === 'manual' && (
+            <div className="flex flex-col gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <div className="flex flex-col gap-1">
+                <label className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">District</label>
+                <select
+                  value={manualDistrict}
+                  onChange={(e) => {
+                    setManualDistrict(e.target.value);
+                    const list = TN_DISTRICTS_UNIQUE.find(d => d.name === e.target.value)?.wards || [];
+                    if (list.length > 0) setManualWard(list[0]);
+                  }}
+                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 text-xs focus:border-blue-600 outline-none transition-all duration-200 cursor-pointer font-semibold"
+                >
+                  {TN_DISTRICTS_UNIQUE.map(d => (
+                    <option key={d.name} value={d.name}>{d.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Ward & Area</label>
+                <select
+                  value={manualWard}
+                  onChange={(e) => setManualWard(e.target.value)}
+                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 text-xs focus:border-blue-600 outline-none transition-all duration-200 cursor-pointer font-semibold"
+                >
+                  {(TN_DISTRICTS_UNIQUE.find(d => d.name === manualDistrict)?.wards || []).map(w => (
+                    <option key={w} value={w}>{w}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex justify-between items-center mt-1 border-t border-slate-100 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setLocationStep('idle')}
+                  className="text-[10px] text-blue-600 font-bold hover:underline cursor-pointer bg-transparent border-none flex items-center gap-1"
+                >
+                  📍 Detect Automatically
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveManualLocation}
+                  className="bg-slate-800 hover:bg-slate-900 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                >
+                  Apply Selection
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Current Selection Summary */}
+          {area && (
+            <div className="mt-3 pt-2.5 border-t border-slate-150 flex items-center justify-between text-[10px] font-semibold text-slate-600">
+              <span>Selected Location:</span>
+              <span className="text-blue-600 font-extrabold">{area}</span>
+            </div>
+          )}
         </div>
 
         <button

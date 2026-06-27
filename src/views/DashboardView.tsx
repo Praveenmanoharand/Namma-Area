@@ -44,7 +44,14 @@ export const DashboardView: React.FC = () => {
 
   // Extract ward and location dynamically
   const getWardAndLocation = () => {
-    if (!currentUser?.area) return { ward: '4', location: 'Chennai' };
+    if (!currentUser?.area) return { ward: '108', location: 'Anna Nagar West' };
+    if (currentUser.area.includes('•')) {
+      const parts = currentUser.area.split('•');
+      const wardPart = parts[0]?.trim() || 'Ward 108';
+      const wardNumber = wardPart.replace(/\D/g, '') || '108';
+      const locationPart = parts[1]?.trim() || 'Anna Nagar West';
+      return { ward: wardNumber, location: locationPart };
+    }
     const parts = currentUser.area.split(',');
     const wardPart = parts[0]?.trim() || 'Ward 4';
     const wardNumber = wardPart.replace(/\D/g, '') || '4';

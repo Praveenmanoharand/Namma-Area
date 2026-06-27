@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ArrowLeft, Settings, Bell, Globe, Shield, HelpCircle, 
-  Check, Smartphone, Sparkles, Languages
+  Check, Smartphone, Sparkles, Languages, MapPin
 } from 'lucide-react';
 import { useRouter } from '../router';
 import { getCurrentUser, updateUserProfile } from '../db';
 import { useLanguage } from '../LanguageContext';
+import { detectLocation } from '../utils/geocoder';
 
 export const SettingsView: React.FC = () => {
   const { goBack } = useRouter();
@@ -18,6 +19,51 @@ export const SettingsView: React.FC = () => {
   const [notifyPolls, setNotifyPolls] = useState(false);
   const [formPhone, setFormPhone] = useState(currentUser?.mobileNumber || '');
   const [showSavedToast, setShowSavedToast] = useState(false);
+
+  // Location Preference States
+  const [autoDetect, setAutoDetect] = useState(() => {
+    return localStorage.getItem('namma_auto_detect_location') !== 'off';
+  });
+  const [permissionStatus, setPermissionStatus] = useState<'granted' | 'denied' | 'prompt'>('prompt');
+  const [refreshing, setRefreshing] = useState(false);
+  const [refreshMessage, setRefreshMessage] = useState('');
+
+  // Check geolocation permission status
+  useEffect(() => {
+    if (navigator.permissions && navigator.permissions.query) {
+      navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+        setPermissionStatus(result.state as any);
+        result.onchange = () => {
+          setPermissionStatus(result.state as any);
+        };
+      }).catch(err => {
+        console.warn('Permissions query not supported for geolocation', err);
+      });
+    }
+  }, []);
+
+  const handleRefreshLocation = async () => {
+    try {
+      setRefreshing(true);
+      setRefreshMessage('');
+      const loc = await detectLocation();
+      const finalArea = `${loc.ward} • ${loc.area}`;
+      
+      if (currentUser) {
+        await updateUserProfile({ area: finalArea });
+      }
+      localStorage.setItem('namma_preferred_location', finalArea);
+      setRefreshMessage(`Refreshed: ${finalArea} ✅`);
+      
+      // Auto-clear message
+      setTimeout(() => setRefreshMessage(''), 4000);
+    } catch (err) {
+      console.error('Refresh location failed:', err);
+      setRefreshMessage('Failed to refresh location. Please check permissions.');
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,6 +129,67 @@ export const SettingsView: React.FC = () => {
           >
             தமிழ் (Tamil)
           </button>
+        </div>
+      </div>
+
+      {/* Location Preferences */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-4.5 shadow-xs flex flex-col gap-3.5 animate-in fade-in duration-300">
+        <h3 className="text-xs font-bold text-slate-900 flex items-center gap-1.5 uppercase tracking-wide">
+          <MapPin size={14} className="text-blue-600" />
+          Location Preferences
+        </h3>
+
+        <div className="flex flex-col gap-3.5">
+          {/* Auto Detect Location Toggle */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="font-bold text-slate-800 text-xs">Auto Detect Location</h4>
+              <p className="text-[10px] text-slate-500 font-medium">Automatically keep your ward up to date</p>
+            </div>
+            <button
+              onClick={() => {
+                const newVal = !autoDetect;
+                setAutoDetect(newVal);
+                localStorage.setItem('namma_auto_detect_location', newVal ? 'on' : 'off');
+              }}
+              className={`w-10 h-6 rounded-full p-0.5 transition-colors ${autoDetect ? 'bg-blue-600' : 'bg-slate-200'}`}
+            >
+              <div className={`w-5 h-5 bg-white rounded-full shadow-md transform transition-transform ${autoDetect ? 'translate-x-4' : 'translate-x-0'}`} />
+            </button>
+          </div>
+
+          {/* Location Permission Status */}
+          <div className="flex items-center justify-between border-t border-slate-50 pt-3">
+            <div>
+              <h4 className="font-bold text-slate-800 text-xs">Location Permission Status</h4>
+              <p className="text-[10px] text-slate-500 font-medium font-sans">Browser Geolocation permission status</p>
+            </div>
+            <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase ${
+              permissionStatus === 'granted' 
+                ? 'bg-emerald-50 text-emerald-700 border border-emerald-150' 
+                : permissionStatus === 'prompt'
+                ? 'bg-amber-50 text-amber-700 border border-amber-150'
+                : 'bg-rose-50 text-rose-700 border border-rose-150'
+            }`}>
+              {permissionStatus}
+            </span>
+          </div>
+
+          {/* Refresh Current Location Action Button */}
+          <div className="border-t border-slate-50 pt-3 flex flex-col gap-2">
+            <button
+              onClick={handleRefreshLocation}
+              disabled={refreshing}
+              className="w-full py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold rounded-xl shadow-xs cursor-pointer transition-all duration-150 flex items-center justify-center gap-1.5 active:scale-98 disabled:opacity-60"
+            >
+              {refreshing ? '📡 Refreshing...' : '🔄 Refresh Current Location'}
+            </button>
+            {refreshMessage && (
+              <p className="text-[9px] text-emerald-600 font-bold text-center animate-in fade-in duration-200">
+                {refreshMessage}
+              </p>
+            )}
+          </div>
         </div>
       </div>
 

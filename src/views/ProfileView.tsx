@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from '../router';
 import { getCurrentUser, logout, updateUserProfile, getCitizenScoreAndRank } from '../db';
 import { MapPin, Award, CheckCircle2, Megaphone, ArrowRight, LogOut, ChevronRight, Settings, ShieldAlert, HeartHandshake, HelpCircle } from 'lucide-react';
+import { TN_DISTRICTS_UNIQUE } from '../data/tamilnadu-wards';
 
 export const ProfileView: React.FC = () => {
   const { navigateTo } = useRouter();
@@ -19,7 +20,10 @@ export const ProfileView: React.FC = () => {
   const [editName, setEditName] = useState(currentUser?.name || '');
   const [editEmail, setEditEmail] = useState(currentUser?.email || '');
   const [editMobile, setEditMobile] = useState(currentUser?.mobileNumber || '');
-  const [editArea, setEditArea] = useState(currentUser?.area || 'Ward 4, Indiranagar, Bengaluru');
+  const [editArea, setEditArea] = useState(currentUser?.area || 'Ward 108 • Anna Nagar West');
+
+  const [editDistrict, setEditDistrict] = useState('Chennai');
+  const [editWard, setEditWard] = useState('Ward 15 - Anna Nagar');
 
   // Keep state updated if current user changes
   useEffect(() => {
@@ -29,8 +33,19 @@ export const ProfileView: React.FC = () => {
       setEditEmail(currentUser.email);
       setEditMobile(currentUser.mobileNumber || '');
       setEditArea(currentUser.area);
+
+      const areaStr = currentUser.area;
+      if (areaStr.includes('•')) {
+        const parts = areaStr.split('•');
+        setEditWard(parts[0]?.trim() || 'Ward 15 - Anna Nagar');
+        setEditDistrict(parts[1]?.trim() || 'Chennai');
+      } else if (areaStr.includes(',')) {
+        const parts = areaStr.split(',');
+        setEditWard(parts[0]?.trim() || 'Ward 4');
+        setEditDistrict(parts[2]?.trim() || 'Chennai');
+      }
     }
-  }, [currentUser?.id]);
+  }, [currentUser?.id, currentUser?.area]);
 
   const handleLogout = () => {
     logout();
@@ -41,12 +56,16 @@ export const ProfileView: React.FC = () => {
     e.preventDefault();
     if (!editName || !editEmail) return;
 
+    const finalArea = `${editWard} • ${editDistrict}`;
     updateUserProfile({
       name: editName,
       email: editEmail,
       mobileNumber: editMobile,
-      area: editArea,
+      area: finalArea,
     });
+
+    // Save preference
+    localStorage.setItem('namma_preferred_location', finalArea);
 
     // Refresh state
     const updated = getCurrentUser();
@@ -121,20 +140,41 @@ export const ProfileView: React.FC = () => {
             />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] font-bold text-slate-700 uppercase tracking-wider">Residential Ward</label>
-            <select
-              id="edit-profile-area"
-              value={editArea}
-              onChange={(e) => setEditArea(e.target.value)}
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-xs focus:bg-white focus:border-blue-600 outline-none transition-all duration-200 cursor-pointer"
-            >
-              <option value="Ward 4, Indiranagar, Bengaluru">Ward 4, Indiranagar, Bengaluru</option>
-              <option value="Ward 12, Koramangala, Bengaluru">Ward 12, Koramangala, Bengaluru</option>
-              <option value="Ward 18, Jayanagar, Bengaluru">Ward 18, Jayanagar, Bengaluru</option>
-              <option value="Ward 25, Whitefield, Bengaluru">Ward 25, Whitefield, Bengaluru</option>
-              <option value="Ward 33, Malleshwaram, Bengaluru">Ward 33, Malleshwaram, Bengaluru</option>
-            </select>
+          {/* Location Editing */}
+          <div className="flex flex-col gap-3 border-t border-slate-100 pt-3">
+            <h4 className="text-[10px] font-extrabold text-slate-700 uppercase tracking-wider">Residential Location</h4>
+            
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">District</label>
+              <select
+                id="edit-profile-district"
+                value={editDistrict}
+                onChange={(e) => {
+                  setEditDistrict(e.target.value);
+                  const list = TN_DISTRICTS_UNIQUE.find(d => d.name === e.target.value)?.wards || [];
+                  if (list.length > 0) setEditWard(list[0]);
+                }}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-xs focus:bg-white focus:border-blue-600 outline-none transition-all duration-200 cursor-pointer"
+              >
+                {TN_DISTRICTS_UNIQUE.map(d => (
+                  <option key={d.name} value={d.name}>{d.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Ward & Area</label>
+              <select
+                id="edit-profile-ward"
+                value={editWard}
+                onChange={(e) => setEditWard(e.target.value)}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-xs focus:bg-white focus:border-blue-600 outline-none transition-all duration-200 cursor-pointer"
+              >
+                {(TN_DISTRICTS_UNIQUE.find(d => d.name === editDistrict)?.wards || []).map(w => (
+                  <option key={w} value={w}>{w}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {/* Action Buttons */}
@@ -216,6 +256,76 @@ export const ProfileView: React.FC = () => {
         >
           Edit Profile
         </button>
+      </div>
+      
+      {/* Residential Location Card */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col gap-3 font-sans animate-in fade-in duration-300">
+        <h3 className="text-xs font-bold text-slate-800 flex items-center gap-1.5 border-b border-slate-100 pb-2">
+          <MapPin size={15} className="text-blue-600" />
+          Residential Location
+        </h3>
+        
+        {/* Location Info Table */}
+        {(() => {
+          // Parse location fields
+          const areaStr = user?.area || 'Ward 108 • Anna Nagar West';
+          let wardVal = 'Ward 108';
+          let areaVal = 'Anna Nagar West';
+          let districtVal = 'Chennai';
+          let stateVal = 'Tamil Nadu';
+          let localBodyVal = 'Greater Chennai Corporation';
+
+          if (areaStr.includes('•')) {
+            const parts = areaStr.split('•');
+            wardVal = parts[0]?.trim() || 'Ward 108';
+            const areaPart = parts[1]?.trim() || 'Anna Nagar West';
+            if (areaPart.includes(',')) {
+              const subparts = areaPart.split(',');
+              areaVal = subparts[0]?.trim() || 'Anna Nagar West';
+              districtVal = subparts[1]?.trim() || 'Chennai';
+            } else {
+              areaVal = areaPart;
+              districtVal = 'Chennai';
+            }
+          } else if (areaStr.includes(',')) {
+            const parts = areaStr.split(',');
+            wardVal = parts[0]?.trim() || 'Ward 4';
+            areaVal = parts[1]?.trim() || 'Indiranagar';
+            districtVal = parts[2]?.trim() || 'Bengaluru';
+            stateVal = parts[3]?.trim() || 'Karnataka';
+            localBodyVal = districtVal.includes('Bengaluru') ? 'BBMP' : 'Greater Chennai Corporation';
+          }
+
+          return (
+            <div className="flex flex-col gap-2">
+              <div className="grid grid-cols-2 gap-y-2 text-[10px] bg-slate-50 p-3 rounded-xl border border-slate-100">
+                <div className="font-bold text-slate-400 uppercase tracking-wider">State</div>
+                <div className="font-extrabold text-slate-800 text-right">{stateVal}</div>
+                
+                <div className="font-bold text-slate-400 uppercase tracking-wider border-t border-slate-100 pt-1.5">District</div>
+                <div className="font-extrabold text-slate-800 text-right border-t border-slate-100 pt-1.5">{districtVal}</div>
+
+                <div className="font-bold text-slate-400 uppercase tracking-wider border-t border-slate-100 pt-1.5">Local Body</div>
+                <div className="font-extrabold text-slate-800 text-right border-t border-slate-100 pt-1.5">{localBodyVal}</div>
+
+                <div className="font-bold text-slate-400 uppercase tracking-wider border-t border-slate-100 pt-1.5">Ward</div>
+                <div className="font-extrabold text-blue-600 text-right border-t border-slate-100 pt-1.5">{wardVal}</div>
+
+                <div className="font-bold text-slate-400 uppercase tracking-wider border-t border-slate-100 pt-1.5">Area</div>
+                <div className="font-extrabold text-slate-800 text-right border-t border-slate-100 pt-1.5">{areaVal}</div>
+              </div>
+
+              <button
+                type="button"
+                id="btn-edit-residential-location"
+                onClick={() => setIsEditing(true)}
+                className="mt-1 w-full bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 rounded-xl font-bold text-xs transition-colors cursor-pointer text-center"
+              >
+                Edit Location
+              </button>
+            </div>
+          );
+        })()}
       </div>
 
       {/* Stats Cards Stack (Matching Image 4 Layout) */}
